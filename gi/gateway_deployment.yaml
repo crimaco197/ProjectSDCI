@@ -1,0 +1,22 @@
+# Deployment Gateway
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-gateway-deployment
+  namespace: project
+spec:
+  selector:
+    matchLabels:
+      app: iot-gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: iot-gateway
+    spec:
+      containers:
+      - name: iot-gateway-container
+        image: 30.0.0.32:5000/iot-gateway-img:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8081

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-server-deployment
+  namespace: project
+  labels:
+    app: iot-server
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: iot-server
+  template:
+    metadata:
+      labels:
+        app: iot-server
+    spec:
+      containers:
+      - name: iot-server
+        image: 30.0.0.32:5000/iot-server-app-img:latest # imagen docker
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080

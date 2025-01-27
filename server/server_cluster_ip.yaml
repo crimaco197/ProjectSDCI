@@ -1,0 +1,16 @@
+# Service ClusterIP for Server
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-server-clusterip
+  namespace: project
+  labels:
+    app: iot-server
+spec:
+  selector:
+    app: iot-server
+  ports:
+  - protocol: TCP
+    port: 8080 # Puerto del servicio dentro del clúster
+    targetPort: 8080 # Puerto del contenedor
+  type: ClusterIP

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-zone2-deployment
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iot-zone2
+  template:
+    metadata:
+      labels:
+        app: iot-zone2
+    spec:
+      serviceAccountName: zone2-sa # Allows to give Pod authentication and permissions control
+      containers:
+        - name: zone-2
+          image: 30.0.0.32:5000/iot-zone-img:latest
+          imagePullPolicy: Always
+          env:
+            - name: GW_NAME
+              value: "gateway2"
+            - name: DEV_NAME
+              value: "dev2"
+          ports:
+            - containerPort: 8082  # Port gateway

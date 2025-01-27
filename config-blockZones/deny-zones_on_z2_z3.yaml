@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-zones
+  namespace: project
+spec:
+  # Filter all messages passing throught the Gateway
+  selector:
+    matchLabels:
+      app: iot-gateway
+  action: DENY
+  rules:
+  - from:
+    - source:
+        principals: # Deny the flow comming for zone2 and zone3
+          - "cluster.local/ns/project/sa/zone2-sa"
+          - "cluster.local/ns/project/sa/zone3-sa"

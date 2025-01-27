@@ -1,0 +1,42 @@
+# Service ClusterIP for Gateway
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-zone1-clusterip
+  namespace: project
+spec:
+  selector:
+    app: iot-zone1
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-zone2-clusterip
+  namespace: project
+spec:
+  selector:
+    app: iot-zone2
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-zone3-clusterip
+  namespace: project
+spec:
+  selector:
+    app: iot-zone3
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP

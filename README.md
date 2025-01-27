@@ -106,9 +106,10 @@ You can simulate traffic using `curl` or load-testing tools like `hey`.
 #### Send Requests from Zones
 
 ```bash
-kubectl run curl-test --image=curlimages/curl -it --rm --restart=Never -n project -- /bin/sh
-curl -H "app: iot-zone1" http://iot-gateway-clusterip.project.svc.cluster.local:8081
-curl -H "app: iot-zone2" http://iot-gateway-clusterip.project.svc.cluster.local:8081
+kubectl exec -it iot-zone2-deployment-64f97bc-2d2zd -n project -- sh
+curl -H http://iot-gateway-clusterip:8081
+kubectl exec -it iot-zone3-deployment-7bdb76c577-dncn4 -n project -- sh
+curl -H http://iot-gateway-clusterip:8081
 ```
 
 #### View Metrics and Logs

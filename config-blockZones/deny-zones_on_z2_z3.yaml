@@ -12,6 +12,6 @@ spec:
   rules:
   - from:
     - source:
-        principals: # Deny the flow comming for zone2 and zone3
+        principals: # Deny the flow comming for zone2 and zone3 - serviceAccountName
           - "cluster.local/ns/project/sa/zone2-sa"
           - "cluster.local/ns/project/sa/zone3-sa"

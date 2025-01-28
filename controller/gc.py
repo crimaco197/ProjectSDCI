@@ -1,4 +1,5 @@
 import os
+import subprocess
 import time
 import threading
 from prometheus_api_client import PrometheusConnect
@@ -49,10 +50,8 @@ class Monitor(threading.Thread):
         Returns the numeric value or None if no data.
         """
         query = (
-        #    'histogram_quantile(0.95, '
-        #    'sum(rate(istio_request_duration_milliseconds_bucket'
-        #    '{app="iot-zone1", connection_security_policy="unknown", destination_app="iot-gateway"}[5m])) by (le))'
-        'histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket[5m])) by (le))'
+            'histogram_quantile(0.95, '
+            'sum(rate(istio_request_duration_milliseconds_bucket{destination_app="iot-gateway"}[5m])) by (le))'
         )
         result = self.prometheus.custom_query(query)
         if result:
@@ -67,8 +66,8 @@ class Monitor(threading.Thread):
                 self.response_time_history.pop(0)
 
             print(f"Current response time: {response_time} ms")
-            # If response time is above 500 ms, raise an alert
-            if response_time and response_time > 50:
+            # If response time is above 500 ms, raise an alert / 80 ms for tests
+            if response_time and response_time > 80:
                 self.alerts += 1
                 print(f"ALERT! High response time: {response_time} ms")
             time.sleep(5)
@@ -76,7 +75,26 @@ class Monitor(threading.Thread):
     def stop(self):
         self.running = False
 
+def start_dashboard(service, port):
+    """
+    Starts a dashboard by running the port-forward command in the background.
+    """
+    try:
+        print(f"Starting {service} dashboard on port {port}...")
+        subprocess.Popen(
+            ["kubectl", "port-forward", "-n", "istio-system", f"svc/{service}", f"{port}:{port}"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+    except Exception as e:
+        print(f"Failed to start {service} dashboard: {e}")
+        
 def main():
+    # Start Prometheus and Kiali dashboards
+    start_dashboard("prometheus", "9090")
+    start_dashboard("kiali", "20001")
+
+
     monitor = Monitor()
     monitor.start()
 
@@ -89,7 +107,7 @@ def main():
             if monitor.alerts == 0:
                 if is_blocked:
                     # Check if response time has been normal for 3 consecutive cycles
-                    if all(rt and rt < 50 for rt in monitor.response_time_history):
+                    if all(rt and rt < 80 for rt in monitor.response_time_history):
                         consecutive_normal += 1
                         if consecutive_normal >= 3:
                             # If stable for 3 cycles, unblock
